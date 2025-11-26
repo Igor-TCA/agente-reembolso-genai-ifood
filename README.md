@@ -1,4 +1,4 @@
-# (Projeto GenAI iFood) Agente de Reembolso Inteligente - Arquitetura Híbrida
+# (POC GenAI iFood) Agente de Reembolso Inteligente - Arquitetura Híbrida
 Sistema de IA para automação de decisões de reembolso que combina **busca semântica (RAG)** para interpretação de políticas e **validação determinística com Python** para compliance financeiro.
 
 ## Funcionalidades
