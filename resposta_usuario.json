@@ -1,0 +1,12 @@
+{
+  "consulta_usuario": "Recebi o pedido errado, quero meu reembolso",
+  "contexto": {
+    "status": "SAIU_PARA_ENTREGA",
+    "motivo": "ERRO_RESTAURANTE",
+    "categoria": "reembolso",
+    "detalhes_adicionais": {
+      "valor_pedido": "45.90",
+      "tempo_espera": "35"
+    }
+  }
+}
