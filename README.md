@@ -1,4 +1,4 @@
-# Sistema de Reembolso iFood - Agente GenAI v2.0
+# (POC GenAI iFood) Agente de Reembolso Inteligente - Arquitetura Híbrida V2.0
 
 Sistema inteligente de analise e processamento de solicitacoes de reembolso para o iFood, utilizando tecnicas avancadas de IA e processamento de linguagem natural.
 
@@ -16,28 +16,40 @@ Sistema inteligente de analise e processamento de solicitacoes de reembolso para
 
 ```
 MyProject/
-├── main.py                 # Agente principal v2.0
-├── motor_politicas.py      # Motor de regras expandido + Sistema de Scoring
-├── busca_semantica.py      # Busca TF-IDF com sinonimos
-├── integracao_llm.py       # Integracao OpenAI/Gemini/Local
-├── sistema_logging.py      # Logging estruturado para auditoria
-├── tratamento_erros.py     # Tratamento robusto de excecoes
-├── reclamacoes.py          # Interface de coleta de reclamacoes
-├── modelos_dados.py        # Modelos e mapeamentos
-├── gerenciador_json.py     # Persistencia de dados
-├── utils_interface.py      # Utilitarios de interface
-├── tests.py                # Testes unitarios
-├── base_conhecimento_*.csv # Base de politicas
-└── logs/                   # Arquivos de auditoria (gerados)
+├── main.py                     # Agente principal v2.0
+├── coletar_reclamacao.py       # Script para coletar reclamacoes (CLI)
+├── backend/                    # Motor de processamento
+│   ├── motor_politicas.py      # Motor de regras (16 regras) + Scoring
+│   ├── busca_semantica.py      # Busca TF-IDF com sinonimos
+│   ├── integracao_llm.py       # Integracao OpenAI/Gemini/Local
+│   ├── sistema_logging.py      # Logging estruturado
+│   └── tratamento_erros.py     # Tratamento de excecoes
+├── frontend/                   # Interface CLI do usuario
+│   ├── reclamacoes.py          # Coleta de reclamacoes
+│   ├── modelos_dados.py        # Modelos e mapeamentos
+│   ├── gerenciador_json.py     # Persistencia de dados
+│   └── utils_interface.py      # Utilitarios de interface
+├── web/                        # Interface Web (HTML/CSS/JS)
+│   ├── index.html              # Pagina principal
+│   ├── styles.css              # Estilos (tema vermelho/branco/preto)
+│   └── app.js                  # Logica da interface
+├── tests/                      # Testes unitarios
+│   └── tests.py
+├── base_conhecimento_*.csv     # Base de politicas
+└── logs/                       # Arquivos de auditoria (gerados)
 ```
 
 ## Como Usar
 
-### 1. Modo Interativo (com reclamacao do usuario)
+### 1. Interface Web (recomendado)
+
+Abra o arquivo `web/index.html` no navegador para usar a interface grafica.
+
+### 2. Modo CLI Interativo (com reclamacao do usuario)
 
 ```bash
 # Primeiro, colete a reclamacao do usuario
-python reclamacoes.py
+python coletar_reclamacao.py
 
 # Depois, processe com o agente
 python main.py
@@ -52,24 +64,8 @@ python main.py --teste
 ### 3. Executar Testes Unitários
 
 ```bash
-python tests.py
+python tests/tests.py
 ```
-
-## Configuracao de LLMs (Opcional)
-
-Para usar LLMs reais em vez do analisador local:
-
-### OpenAI (Windows PowerShell)
-```powershell
-$env:OPENAI_API_KEY = "sua-chave-aqui"
-```
-
-### Google Gemini (Windows PowerShell)
-```powershell
-$env:GOOGLE_API_KEY = "sua-chave-aqui"
-```
-
-Se nenhuma chave for configurada, o sistema usa o **analisador local avançado** automaticamente.
 
 ## Pipeline de Processamento
 
