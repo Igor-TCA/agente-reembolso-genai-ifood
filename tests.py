@@ -361,14 +361,14 @@ def executar_testes():
     print("\n" + "="*60)
     print("  RESUMO DOS TESTES")
     print("="*60)
-    print(f"\n   ✅ Testes executados: {resultado.testsRun}")
-    print(f"   ❌ Falhas: {len(resultado.failures)}")
-    print(f"   ⚠️ Erros: {len(resultado.errors)}")
+    print(f"\n   [OK] Testes executados: {resultado.testsRun}")
+    print(f"   [X] Falhas: {len(resultado.failures)}")
+    print(f"   [!] Erros: {len(resultado.errors)}")
     
     if resultado.wasSuccessful():
-        print("\n   🎉 TODOS OS TESTES PASSARAM!\n")
+        print("\n   TODOS OS TESTES PASSARAM!\n")
     else:
-        print("\n   ⚠️ Alguns testes falharam.\n")
+        print("\n   [!] Alguns testes falharam.\n")
     
     return resultado.wasSuccessful()
 

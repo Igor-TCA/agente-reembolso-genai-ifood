@@ -113,9 +113,9 @@ class AgenteReembolsoV2:
         self.logger.log_inicio_processamento(consulta_usuario, contexto)
         
         print(f"\n{'='*60}")
-        print(f"  PROCESSANDO SOLICITAÇÃO")
+        print(f"  PROCESSANDO SOLICITACAO")
         print(f"{'='*60}\n")
-        print(f"[→] Consulta: {consulta_usuario[:80]}...")
+        print(f"[>] Consulta: {consulta_usuario[:80]}...")
         
         # ETAPA 1: Busca Semântica
         print("\n[1/5] Realizando busca semântica...")
@@ -126,10 +126,10 @@ class AgenteReembolsoV2:
         fontes_consultadas = list(set(r.item.fonte for r in resultados_busca))
         
         self.logger.log_busca_base(consulta_usuario, len(resultados_busca), tempo_busca_ms)
-        print(f"    ✓ {len(resultados_busca)} políticas encontradas ({tempo_busca_ms:.1f}ms)")
+        print(f"    [OK] {len(resultados_busca)} politicas encontradas ({tempo_busca_ms:.1f}ms)")
         
         for r in resultados_busca[:3]:
-            print(f"      • {r.item.fonte} (similaridade: {r.score_similaridade:.0%})")
+            print(f"      - {r.item.fonte} (similaridade: {r.score_similaridade:.0%})")
         
         # ETAPA 2: Motor de Políticas
         print("\n[2/5] Aplicando regras determinísticas...")
@@ -141,18 +141,18 @@ class AgenteReembolsoV2:
                 resultado_politica.decisao.value,
                 resultado_politica.confianca.value
             )
-            print(f"    ✓ Regra ativada: {resultado_politica.codigo_politica}")
-            print(f"      Decisão: {resultado_politica.decisao.value}")
+            print(f"    [OK] Regra ativada: {resultado_politica.codigo_politica}")
+            print(f"      Decisao: {resultado_politica.decisao.value}")
         else:
-            print("    ○ Nenhuma regra determinística aplicável")
+            print("    [-] Nenhuma regra deterministica aplicavel")
         
         # ETAPA 3: Cálculo de Score
         print("\n[3/5] Calculando score de elegibilidade...")
         resultado_score = self.sistema_scoring.calcular_score(contexto, resultado_politica)
         
         self.logger.log_score(resultado_score['score_final'], resultado_score['scores_parciais'])
-        print(f"    ✓ Score final: {resultado_score['score_final']:.3f}")
-        print(f"      Recomendação: {resultado_score['recomendacao']}")
+        print(f"    [OK] Score final: {resultado_score['score_final']:.3f}")
+        print(f"      Recomendacao: {resultado_score['recomendacao']}")
         
         # ETAPA 4: Decisão
         print("\n[4/5] Tomando decisão...")
@@ -164,11 +164,11 @@ class AgenteReembolsoV2:
                 fontes_consultadas, 
                 resultado_score
             )
-            print(f"    ✓ Decisão por política determinística")
+            print(f"    [OK] Decisao por politica deterministica")
         
-        # Se não há regra ou confiança é baixa, usar LLM
+        # Se nao ha regra ou confianca e baixa, usar LLM
         elif not resultado_politica or resultado_politica.confianca == ConfiancaNivel.BAIXA:
-            print("    → Acionando análise por IA...")
+            print("    [>] Acionando analise por IA...")
             
             # Preparar contexto para LLM
             contexto_llm = contexto.copy()
@@ -191,7 +191,7 @@ class AgenteReembolsoV2:
                 resultado_score,
                 resultado_politica
             )
-            print(f"    ✓ Decisão por análise IA ({resposta_llm.modelo})")
+            print(f"    [OK] Decisao por analise IA ({resposta_llm.modelo})")
         
         # Confiança média - combinar política com score
         else:
@@ -200,7 +200,7 @@ class AgenteReembolsoV2:
                 fontes_consultadas,
                 resultado_score
             )
-            print(f"    ✓ Decisão combinada (política + score)")
+            print(f"    [OK] Decisao combinada (politica + score)")
         
         # ETAPA 5: Finalização
         tempo_total_ms = (time.time() - inicio) * 1000
@@ -323,34 +323,34 @@ def exibir_resultado(resposta: RespostaAgente):
     print("  RESULTADO DA ANÁLISE")
     print("="*60 + "\n")
     
-    # Ícone baseado na decisão
-    icones = {
-        "APROVAR": "✅",
-        "REJEITAR": "❌",
-        "ESCALAR": "⚠️",
-        "ANALISE_MANUAL": "🔍"
+    # Indicador baseado na decisao
+    indicadores = {
+        "APROVAR": "[+]",
+        "REJEITAR": "[-]",
+        "ESCALAR": "[!]",
+        "ANALISE_MANUAL": "[?]"
     }
-    icone = icones.get(resposta.acao, "📋")
+    indicador = indicadores.get(resposta.acao, "[*]")
     
-    print(f"{icone} DECISÃO: {resposta.acao}")
-    print(f"📊 CONFIANÇA: {resposta.confianca}")
-    print(f"📈 SCORE: {resposta.score:.1%}")
-    print(f"📋 POLÍTICA: {resposta.codigo_politica}")
-    print(f"⚙️ MÉTODO: {resposta.metodo_decisao}")
-    print(f"\n💬 RESPOSTA:")
+    print(f"{indicador} DECISAO: {resposta.acao}")
+    print(f"CONFIANCA: {resposta.confianca}")
+    print(f"SCORE: {resposta.score:.1%}")
+    print(f"POLITICA: {resposta.codigo_politica}")
+    print(f"METODO: {resposta.metodo_decisao}")
+    print(f"\nRESPOSTA:")
     print(f"   {resposta.resposta_final}")
     
     if resposta.fontes:
-        print(f"\n📚 FONTES CONSULTADAS:")
+        print(f"\nFONTES CONSULTADAS:")
         for fonte in set(resposta.fontes):
-            print(f"   • {fonte}")
+            print(f"   - {fonte}")
     
     if resposta.detalhes_score:
-        print(f"\n📊 BREAKDOWN DO SCORE:")
+        print(f"\nBREAKDOWN DO SCORE:")
         for fator, valor in resposta.detalhes_score.items():
-            print(f"   • {fator}: {valor:.2f}")
+            print(f"   - {fator}: {valor:.2f}")
     
-    print(f"\n⏱️ Tempo de processamento: {resposta.tempo_processamento_ms:.1f}ms")
+    print(f"\nTempo de processamento: {resposta.tempo_processamento_ms:.1f}ms")
     print("\n" + "="*60 + "\n")
 
 
@@ -373,18 +373,18 @@ def executar_modo_interativo():
     consulta = dados_usuario.get("consulta_usuario", "")
     contexto = dados_usuario.get("contexto", {})
     
-    print("DADOS DA SOLICITAÇÃO:")
-    print(f"   📝 Consulta: {consulta}")
-    print(f"   📁 Categoria: {contexto.get('categoria', 'N/A')}")
-    print(f"   📦 Status: {contexto.get('status', 'N/A')}")
-    print(f"   🔖 Motivo: {contexto.get('motivo', 'N/A')}")
+    print("DADOS DA SOLICITACAO:")
+    print(f"   Consulta: {consulta}")
+    print(f"   Categoria: {contexto.get('categoria', 'N/A')}")
+    print(f"   Status: {contexto.get('status', 'N/A')}")
+    print(f"   Motivo: {contexto.get('motivo', 'N/A')}")
     
     detalhes = contexto.get('detalhes_adicionais', {})
     if detalhes:
         if detalhes.get('valor_pedido'):
-            print(f"   💰 Valor: R$ {detalhes.get('valor_pedido')}")
+            print(f"   Valor: R$ {detalhes.get('valor_pedido')}")
         if detalhes.get('tempo_espera'):
-            print(f"   ⏰ Tempo de espera: {detalhes.get('tempo_espera')} min")
+            print(f"   Tempo de espera: {detalhes.get('tempo_espera')} min")
     
     print("\n" + "-"*60)
     
@@ -474,11 +474,11 @@ def executar_modo_teste():
             "politica": resposta.codigo_politica
         })
         
-        print(f"\n   📊 Resultado:")
-        print(f"      Decisão: {resposta.acao}")
-        print(f"      Confiança: {resposta.confianca}")
+        print(f"\n   Resultado:")
+        print(f"      Decisao: {resposta.acao}")
+        print(f"      Confianca: {resposta.confianca}")
         print(f"      Score: {resposta.score:.1%}")
-        print(f"      Política: {resposta.codigo_politica}")
+        print(f"      Politica: {resposta.codigo_politica}")
     
     # Resumo
     print("\n" + "="*60)
@@ -486,8 +486,8 @@ def executar_modo_teste():
     print("="*60 + "\n")
     
     for r in resultados:
-        icone = "✅" if r['decisao'] in ['APROVAR'] else "❌" if r['decisao'] == 'REJEITAR' else "⚠️"
-        print(f"{icone} {r['cenario'][:35]:<35} | {r['decisao']:<10} | {r['score']:.0%}")
+        indicador = "[+]" if r['decisao'] in ['APROVAR'] else "[-]" if r['decisao'] == 'REJEITAR' else "[!]"
+        print(f"{indicador} {r['cenario'][:35]:<35} | {r['decisao']:<10} | {r['score']:.0%}")
     
     print("\n" + "="*60 + "\n")
 

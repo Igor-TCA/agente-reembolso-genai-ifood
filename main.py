@@ -86,17 +86,17 @@ class AgenteReembolso:
         
         if decisao_regra_rigida:
             if "REJEITADO" in decisao_regra_rigida:
-                print("[✓] Regra de Bloqueio Ativada - Rejeição Automática")
+                print("[OK] Regra de Bloqueio Ativada - Rejeicao Automatica")
                 return RespostaAgente(
-                    "Solicitação negada automaticamente com base na política de entrega.", 
+                    "Solicitacao negada automaticamente com base na politica de entrega.", 
                     "Alta", 
                     "REJEITAR", 
                     fontes_consultadas
                 )
             if "APROVADO" in decisao_regra_rigida:
-                print("[✓] Regra de Aprovação Ativada - Aprovação Automática")
+                print("[OK] Regra de Aprovacao Ativada - Aprovacao Automatica")
                 return RespostaAgente(
-                    "Solicitação aprovada automaticamente por falha operacional.", 
+                    "Solicitacao aprovada automaticamente por falha operacional.", 
                     "Alta", 
                     "APROVAR", 
                     fontes_consultadas
@@ -188,7 +188,7 @@ def executar_modo_interativo():
     if resposta.fontes:
         print(f"\nFONTES CONSULTADAS:")
         for fonte in set(resposta.fontes):
-            print(f"   • {fonte}")
+            print(f"   - {fonte}")
     
     print("\n" + "="*60 + "\n")
 
