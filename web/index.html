@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central de Atendimento - Reembolso</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🍽️</span>
+                    <span class="logo-text">Central de Atendimento</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <span class="step-label">Problema</span>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <span class="step-label">Status</span>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <span class="step-label">Motivo</span>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <span class="step-label">Detalhes</span>
+                </div>
+                <div class="step" data-step="5">
+                    <div class="step-circle">5</div>
+                    <span class="step-label">Confirmar</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Step 1: Tipo de Problema -->
+            <section class="form-section active" id="step1">
+                <h2 class="section-title">Qual é o seu problema?</h2>
+                <p class="section-subtitle">Selecione a categoria que melhor descreve sua situação</p>
+                
+                <div class="options-grid">
+                    <button class="option-card" data-value="cancelamento" onclick="selectOption(this, 'categoria')">
+                        <span class="option-icon">❌</span>
+                        <span class="option-title">Cancelamento</span>
+                        <span class="option-desc">Problemas com cancelamento do pedido</span>
+                    </button>
+                    <button class="option-card" data-value="entrega" onclick="selectOption(this, 'categoria')">
+                        <span class="option-icon">📦</span>
+                        <span class="option-title">Entrega</span>
+                        <span class="option-desc">Pedido não chegou ou veio errado</span>
+                    </button>
+                    <button class="option-card" data-value="cobranca" onclick="selectOption(this, 'categoria')">
+                        <span class="option-icon">💳</span>
+                        <span class="option-title">Cobrança</span>
+                        <span class="option-desc">Problemas com pagamento ou cobrança</span>
+                    </button>
+                    <button class="option-card" data-value="fraude" onclick="selectOption(this, 'categoria')">
+                        <span class="option-icon">🔒</span>
+                        <span class="option-title">Segurança</span>
+                        <span class="option-desc">Compra não reconhecida ou conta invadida</span>
+                    </button>
+                    <button class="option-card" data-value="qualidade" onclick="selectOption(this, 'categoria')">
+                        <span class="option-icon">⭐</span>
+                        <span class="option-title">Qualidade</span>
+                        <span class="option-desc">Problema com a qualidade do pedido</span>
+                    </button>
+                    <button class="option-card" data-value="atraso" onclick="selectOption(this, 'categoria')">
+                        <span class="option-icon">⏰</span>
+                        <span class="option-title">Atraso</span>
+                        <span class="option-desc">Pedido atrasou muito</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Step 2: Status do Pedido -->
+            <section class="form-section" id="step2">
+                <h2 class="section-title">Qual o status do seu pedido?</h2>
+                <p class="section-subtitle">Isso nos ajuda a entender melhor a situação</p>
+                
+                <div class="options-list">
+                    <button class="option-item" data-value="AGUARDANDO_CONFIRMACAO" onclick="selectOption(this, 'status')">
+                        <span class="option-bullet"></span>
+                        <span>Aguardando confirmação do restaurante</span>
+                    </button>
+                    <button class="option-item" data-value="EM_PREPARO" onclick="selectOption(this, 'status')">
+                        <span class="option-bullet"></span>
+                        <span>Em preparo</span>
+                    </button>
+                    <button class="option-item" data-value="SAIU_PARA_ENTREGA" onclick="selectOption(this, 'status')">
+                        <span class="option-bullet"></span>
+                        <span>Saiu para entrega</span>
+                    </button>
+                    <button class="option-item" data-value="ENTREGUE" onclick="selectOption(this, 'status')">
+                        <span class="option-bullet"></span>
+                        <span>Já foi entregue</span>
+                    </button>
+                    <button class="option-item" data-value="CANCELADO" onclick="selectOption(this, 'status')">
+                        <span class="option-bullet"></span>
+                        <span>Cancelado</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Step 3: Motivo -->
+            <section class="form-section" id="step3">
+                <h2 class="section-title">Qual o motivo do problema?</h2>
+                <p class="section-subtitle">Selecione o que melhor descreve sua situação</p>
+                
+                <div class="options-list" id="motivoOptions">
+                    <!-- Será preenchido dinamicamente -->
+                </div>
+            </section>
+
+            <!-- Step 4: Detalhes -->
+            <section class="form-section" id="step4">
+                <h2 class="section-title">Conte mais detalhes</h2>
+                <p class="section-subtitle">Quanto mais informações, melhor podemos ajudar</p>
+                
+                <div class="form-group">
+                    <label class="form-label">Valor do pedido (R$)</label>
+                    <input type="number" class="form-input" id="valorPedido" placeholder="Ex: 45.90" step="0.01" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tempo de espera (minutos)</label>
+                    <input type="number" class="form-input" id="tempoEspera" placeholder="Ex: 60" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Descreva o problema</label>
+                    <textarea class="form-textarea" id="descricaoProblema" placeholder="Conte-nos o que aconteceu com o máximo de detalhes possível..." rows="4"></textarea>
+                </div>
+            </section>
+
+            <!-- Step 5: Confirmação -->
+            <section class="form-section" id="step5">
+                <h2 class="section-title">Confirme suas informações</h2>
+                <p class="section-subtitle">Revise os dados antes de enviar</p>
+                
+                <div class="summary-card">
+                    <div class="summary-item">
+                        <span class="summary-label">Tipo de Problema</span>
+                        <span class="summary-value" id="summaryCategoria">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Status do Pedido</span>
+                        <span class="summary-value" id="summaryStatus">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Motivo</span>
+                        <span class="summary-value" id="summaryMotivo">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Valor do Pedido</span>
+                        <span class="summary-value" id="summaryValor">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Tempo de Espera</span>
+                        <span class="summary-value" id="summaryTempo">-</span>
+                    </div>
+                    <div class="summary-item full-width">
+                        <span class="summary-label">Descrição</span>
+                        <span class="summary-value" id="summaryDescricao">-</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resultado -->
+            <section class="form-section" id="stepResult">
+                <div class="result-container" id="resultContainer">
+                    <!-- Será preenchido após o envio -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Navigation Buttons -->
+        <footer class="footer-nav" id="footerNav">
+            <button class="btn btn-secondary" id="btnBack" onclick="previousStep()" style="display: none;">
+                Voltar
+            </button>
+            <button class="btn btn-primary" id="btnNext" onclick="nextStep()" disabled>
+                Continuar
+            </button>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
