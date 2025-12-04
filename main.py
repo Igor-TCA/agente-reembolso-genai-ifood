@@ -8,26 +8,26 @@ import time
 from typing import List, Dict, Optional
 from dataclasses import dataclass, field
 
-# Importar módulos do sistema
-from motor_politicas import (
+# Importar módulos do backend
+from backend.motor_politicas import (
     MotorPoliticasExpandido, 
     SistemaScoring, 
     ResultadoPolitica,
     DecisaoTipo,
     ConfiancaNivel
 )
-from busca_semantica import (
+from backend.busca_semantica import (
     BaseConhecimentoSemantica, 
     ResultadoBusca,
     ItemConhecimento
 )
-from integracao_llm import GerenciadorLLM, RespostaLLM
-from sistema_logging import (
+from backend.integracao_llm import GerenciadorLLM, RespostaLLM
+from backend.sistema_logging import (
     obter_logger, 
     configurar_logging,
     TipoEvento
 )
-from tratamento_erros import (
+from backend.tratamento_erros import (
     tratar_excecoes,
     validar_entrada,
     ValidadorContexto,
@@ -457,9 +457,9 @@ def executar_modo_teste():
     resultados = []
     
     for i, cenario in enumerate(cenarios, 1):
-        print(f"\n{'─'*60}")
-        print(f"CENÁRIO {i}: {cenario['nome']}")
-        print(f"{'─'*60}")
+        print(f"\n{'-'*60}")
+        print(f"CENARIO {i}: {cenario['nome']}")
+        print(f"{'-'*60}")
         
         resposta = agente.processar_solicitacao(
             cenario['consulta'], 
