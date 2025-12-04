@@ -1,297 +1,229 @@
-# (POC GenAI iFood) Agente de Reembolso Inteligente - Arquitetura Híbrida
-Sistema de IA para automação de decisões de reembolso que combina **busca semântica (RAG)** para interpretação de políticas e **validação determinística com Python** para compliance financeiro.
+# Sistema de Reembolso iFood - Agente GenAI v2.0
 
-## Funcionalidades
+Sistema inteligente de analise e processamento de solicitacoes de reembolso para o iFood, utilizando tecnicas avancadas de IA e processamento de linguagem natural.
 
-- **Interpretação de políticas via RAG** - Busca vetorial para entender nuances de texto
-- **Validação determinística** - Regras de "Hard Block" para compliance financeiro
-- **Decisões automáticas** - Aprovação ou rejeição baseada em regras e IA
-- **Fallback humano** - Escalação quando confiança é baixa
-- **Base de conhecimento** - CSV com políticas do iFood GenAI
-- **Persistência de respostas** - Histórico salvo em JSON
-- **Interface interativa** - CLI com menu de opções
-- **Geração de relatórios** - Estatísticas de reclamações processadas
+## Novidades da Versao 2.0
 
----
+- **Busca Semantica**: TF-IDF com expansao de sinonimos para melhor recuperacao de politicas
+- **Motor de Politicas Expandido**: +16 regras deterministicas cobrindo mais cenarios
+- **Sistema de Scoring**: Pontuacao transparente baseada em multiplos fatores
+- **Integracao LLM Real**: Suporte a OpenAI GPT e Google Gemini com fallback local
+- **Logging Estruturado**: Auditoria completa de todas as decisoes
+- **Tratamento de Erros**: Sistema robusto com recuperacao de falhas
+- **Testes Unitarios**: Cobertura de testes para garantir qualidade
 
-## Fluxo de Decisão
+## Estrutura do Projeto
 
-```mermaid
-flowchart TD
-    Start([Início]) --> InputUser[Input do Usuário]
-    InputUser --> VectorSearch{Busca Vetorial}
-    VectorSearch --> RetrievePolicies[Recuperar Políticas Relevantes]
-    RetrievePolicies --> RigidValidation{Validação Rígida}
-    
-    RigidValidation -->|Regra de Bloqueio Ativada| AutoReject[Rejeição Automática]
-    RigidValidation -->|Regra de Aprovação Ativada| AutoApprove[Aprovação Automática]
-    RigidValidation -->|Regra Inconclusiva| AIGenerative{IA Generativa}
-    
-    AIGenerative -->|Alta Confiança| AIResponse[Resposta da IA]
-    AIGenerative -->|Baixa Confiança| HumanFallback[Fallback Humano]
-    
-    AutoReject --> SaveResponse[Salvar Resposta]
-    AutoApprove --> SaveResponse
-    AIResponse --> SaveResponse
-    HumanFallback --> SaveResponse
-    
-    SaveResponse --> End([Fim])
-    
-    %% CORES
-    style Start fill:#8BE78B,stroke:#2E8B57,color:#000
-    style End fill:#FF8AAE,stroke:#C2185B,color:#000
-    style VectorSearch fill:#FFDE7D,stroke:#DAA520,color:#000
-    style RigidValidation fill:#8ECDF7,stroke:#1E90FF,color:#000
-    style AIGenerative fill:#FFDE7D,stroke:#DAA520,color:#000
-    style AutoReject fill:#FF8AAE,stroke:#C2185B,color:#000
-    style AutoApprove fill:#8BE78B,stroke:#2E8B57,color:#000
-    style SaveResponse fill:#C7A3F5,stroke:#7A3EB1,color:#000
+```
+MyProject/
+├── main.py                 # Agente principal v2.0
+├── motor_politicas.py      # Motor de regras expandido + Sistema de Scoring
+├── busca_semantica.py      # Busca TF-IDF com sinonimos
+├── integracao_llm.py       # Integracao OpenAI/Gemini/Local
+├── sistema_logging.py      # Logging estruturado para auditoria
+├── tratamento_erros.py     # Tratamento robusto de excecoes
+├── reclamacoes.py          # Interface de coleta de reclamacoes
+├── modelos_dados.py        # Modelos e mapeamentos
+├── gerenciador_json.py     # Persistencia de dados
+├── utils_interface.py      # Utilitarios de interface
+├── tests.py                # Testes unitarios
+├── base_conhecimento_*.csv # Base de politicas
+└── logs/                   # Arquivos de auditoria (gerados)
 ```
 
----
+## Como Usar
 
-## Arquitetura
+### 1. Modo Interativo (com reclamacao do usuario)
 
-**Camada de Conhecimento (RAG)**
-- Busca semântica via embeddings vetoriais
-- Base de conhecimento estruturada em CSV
-- Recuperação de políticas relevantes por contexto
+```bash
+# Primeiro, colete a reclamacao do usuario
+python reclamacoes.py
 
-**Camada Determinística (Python)**
-- Regras de negócio críticas em Python
-- Validação de compliance financeiro
-- "Hard Blocks" para casos específicos
-
-**Camada de Orquestração**
-- Gerenciamento do fluxo de decisão
-- Fallback automático para humanos
-- Persistência de histórico em JSON
-
----
-
-## Tecnologia
-
-**RAG (Retrieval-Augmented Generation)** - Combinação de busca e geração:
-- Embeddings vetoriais para busca semântica
-- Recuperação de políticas relevantes
-- Geração de respostas contextualizadas
-
-**Validação Determinística** - Regras de negócio em Python:
-- Validação de valores e prazos
-- Compliance financeiro automático
-- Bloqueios por tipo de reclamação
-
-**Persistência de Dados**:
-- Base de conhecimento: CSV estruturado
-- Histórico de respostas: JSON
-- Modelos de dados: Pydantic
-
----
-
-## Uso
-
-### Passo 1: Executar o sistema
-
-```powershell
+# Depois, processe com o agente
 python main.py
 ```
 
-### Passo 2: Interagir com o menu
+### 2. Modo Teste (cenarios predefinidos)
 
-O sistema apresentará um menu interativo:
-
-```
-======================================================================
- Agente de Reembolso Inteligente - iFood GenAI
-======================================================================
-
-Menu de Opções:
-  1. Registrar nova reclamação
-  2. Visualizar histórico de reclamações
-  3. Gerar relatório de estatísticas
-  4. Buscar reclamação por ID
-  5. Sair
-
-Escolha uma opção (1-5):
+```bash
+python main.py --teste
 ```
 
-### Passo 3: Registrar reclamação
+### 3. Executar Testes Unitários
 
-Escolha a opção `1` e forneça os detalhes:
-
-```
-Digite a descrição da reclamação: Meu pedido chegou frio e quero reembolso
-
-Processando reclamação...
-
-[BUSCA VETORIAL] Recuperando políticas relevantes...
-  Encontradas 3 políticas relacionadas
-
-[VALIDAÇÃO RÍGIDA] Aplicando regras de negócio...
-  Regra: Reembolso permitido dentro de 7 dias
-  Status: APROVADO
-
-[IA GENERATIVA] Gerando resposta personalizada...
-  Confiança: 92%
-
-Decisão: APROVADO
-Resposta: Seu reembolso foi aprovado conforme política de 7 dias...
-
-Reclamação salva com ID: REC-20251126-001
+```bash
+python tests.py
 ```
 
-### Passo 4: Visualizar histórico
+## Configuracao de LLMs (Opcional)
 
-Escolha a opção `2` para ver todas as reclamações processadas:
+Para usar LLMs reais em vez do analisador local:
 
-```
-======================================================================
- Histórico de Reclamações
-======================================================================
-
-ID: REC-20251126-001
-Data: 2025-11-26 14:30:22
-Descrição: Meu pedido chegou frio e quero reembolso
-Decisão: APROVADO
-Confiança: 92%
-----------------------------------------------------------------------
-
-ID: REC-20251126-002
-Data: 2025-11-26 14:35:10
-Descrição: Quero cancelar meu pedido de 3 semanas atrás
-Decisão: REJEITADO
-Confiança: 98%
-----------------------------------------------------------------------
-
-Total de reclamações: 2
+### OpenAI (Windows PowerShell)
+```powershell
+$env:OPENAI_API_KEY = "sua-chave-aqui"
 ```
 
-### Passo 5: Gerar relatório
+### Google Gemini (Windows PowerShell)
+```powershell
+$env:GOOGLE_API_KEY = "sua-chave-aqui"
+```
 
-Escolha a opção `3` para estatísticas:
+Se nenhuma chave for configurada, o sistema usa o **analisador local avançado** automaticamente.
+
+## Pipeline de Processamento
 
 ```
-======================================================================
- Relatório de Estatísticas
-======================================================================
-
-Total de reclamações: 15
-Aprovações automáticas: 8 (53%)
-Rejeições automáticas: 5 (33%)
-Fallback humano: 2 (13%)
-
-Confiança média: 87%
-Tempo médio de resposta: 1.2s
-
-Categorias mais frequentes:
-  1. Reembolso - 6 casos
-  2. Cancelamento - 4 casos
-  3. Qualidade - 3 casos
-  4. Entrega - 2 casos
++-------------------------------------------------------------+
+|                    PIPELINE v2.0                            |
++-------------------------------------------------------------+
+|  1. Busca Semantica (TF-IDF + Sinonimos)                    |
+|     -> Recupera politicas relevantes da base de conhecimento|
++-------------------------------------------------------------+
+|  2. Motor de Politicas (16 regras)                          |
+|     -> Aplica regras deterministicas                        |
++-------------------------------------------------------------+
+|  3. Sistema de Scoring                                      |
+|     -> Calcula elegibilidade baseada em multiplos fatores   |
++-------------------------------------------------------------+
+|  4. Analise LLM (se necessario)                             |
+|     -> OpenAI/Gemini/Local para casos complexos             |
++-------------------------------------------------------------+
+|  5. Decisao Final                                           |
+|     -> APROVAR | REJEITAR | ESCALAR | ANALISE_MANUAL        |
++-------------------------------------------------------------+
 ```
+
+## Regras de Politica Implementadas
+
+| Codigo | Descricao | Decisao |
+|--------|-----------|---------|
+| FRAUDE_F1 | Compra nao reconhecida | Analise Manual |
+| FRAUDE_F2 | Conta comprometida | Analise Manual |
+| FRAUDE_F3 | Multiplas cobrancas | Analise Manual |
+| CANCELAMENTO_C1 | Restaurante cancelou | Aprovar |
+| CANCELAMENTO_C2 | Erro do app | Aprovar |
+| CANCELAMENTO_C3 | Antes da confirmacao | Aprovar |
+| ERRO_E1 | Erro do restaurante | Aprovar |
+| ERRO_E2 | Erro do entregador | Aprovar |
+| ENTREGA_D1 | Pedido nao recebido | Aprovar/Manual |
+| ENTREGA_D2 | Pedido incompleto | Aprovar |
+| FINANCEIRO_FIN1 | Cobranca duplicada | Aprovar |
+| FINANCEIRO_FIN2 | Cobranca pos-cancelamento | Aprovar |
+| ATRASO_A1 | Atraso excessivo | Aprovar/Escalar |
+| ARREPENDIMENTO_R1 | Antes do preparo | Aprovar |
+| ARREPENDIMENTO_R2 | Apos saida entrega | Rejeitar |
+| VALOR_V1 | Alto valor (>R$300) | Analise Manual |
+
+## Sistema de Scoring
+
+O score e calculado considerando:
+
+- **Tipo de Problema** (25%): Categoria da reclamacao
+- **Valor do Pedido** (15%): Risco baseado no valor
+- **Status do Pedido** (15%): Fase atual do pedido
+- **Motivo** (25%): Elegibilidade do motivo
+- **Politica Aplicada** (20%): Resultado das regras
+
+### Recomendacoes baseadas no score:
+
+| Score | Recomendacao |
+|-------|--------------|
+| >= 0.8 | APROVAR - Alta confianca |
+| >= 0.6 | APROVAR_COM_ANALISE - Validacao adicional |
+| >= 0.4 | ESCALAR - Analise humana |
+| < 0.4 | REJEITAR - Baixa elegibilidade |
+
+## Exemplo de Saida
+
+```
+============================================================
+  RESULTADO DA ANALISE
+============================================================
+
+[+] DECISAO: APROVAR
+CONFIANCA: Alta
+SCORE: 95.0%
+POLITICA: ERRO_E1
+METODO: politica
+
+RESPOSTA:
+   Erro do restaurante confirmado. Reembolso total aprovado conforme Politica 2.1.
+
+FONTES CONSULTADAS:
+   - Politica 2.1
+   - Politica 3.2
+
+BREAKDOWN DO SCORE:
+   - tipo_problema: 0.70
+   - valor_pedido: 0.90
+   - status_pedido: 0.30
+   - motivo: 0.95
+   - politica: 0.95
+
+Tempo de processamento: 45.2ms
+============================================================
+```
+
+## Auditoria e Logging
+
+Todos os processamentos sao registrados em:
+- **Console**: Formato legivel com formatacao
+- **Arquivo JSON**: `logs/auditoria_YYYYMMDD_HHMMSS.jsonl` (formato estruturado)
+
+### Tipos de eventos registrados:
+- Início/fim de processamento
+- Busca na base de conhecimento
+- Aplicação de políticas
+- Cálculo de scores
+- Análises por LLM
+- Decisões finais
+- Erros e exceções
+
+## Requisitos
+
+### Obrigatorios
+- Python 3.8+
+
+### Opcionais (para integracao LLM)
+```bash
+pip install openai            # Para OpenAI GPT
+pip install google-generativeai  # Para Google Gemini
+```
+
+## Testes
+
+Execute os testes unitarios para validar o sistema:
+
+```bash
+python tests.py
+```
+
+### Cobertura de testes:
+- Motor de Politicas (7 testes)
+- Sistema de Scoring (3 testes)
+- Processador de Texto (3 testes)
+- Motor TF-IDF (3 testes)
+- Analisador Local (4 testes)
+- Integracao (2 testes)
+
+## Comparativo: v1.0 vs v2.0
+
+| Funcionalidade | v1.0 | v2.0 |
+|----------------|------|------|
+| Busca na base | Palavras-chave simples | TF-IDF + Sinonimos |
+| Regras de politica | 2 | 16 |
+| Sistema de scoring | Nao | Transparente |
+| Integracao LLM | Simulado | OpenAI/Gemini/Local |
+| Logging | Print simples | Estruturado + Auditoria |
+| Tratamento de erros | Basico | Robusto com fallback |
+| Testes | Nao | 22 testes |
+| Uso de contexto | Parcial | Completo |
+
+## Licenca
+
+Projeto educacional para demonstracao de tecnicas de GenAI aplicadas a atendimento ao cliente.
 
 ---
 
-## Configurações Avançadas
-
-### Ajustar threshold de confiança
-
-No arquivo `reclamacoes.py`, modifique o limite para fallback humano:
-
-```python
-CONFIDENCE_THRESHOLD = 0.85  # Padrão: 85%
-```
-
-Se confiança < 85%, escalará para humano.
-
-### Adicionar novas regras de validação
-
-No arquivo `reclamacoes.py`, adicione regras determinísticas:
-
-```python
-def validar_regras(reclamacao: Reclamacao) -> str:
-    # Exemplo: Bloquear reembolsos acima de R$ 500
-    if reclamacao.valor_pedido > 500:
-        return "REJEITADO"
-    
-    # Exemplo: Aprovar cancelamentos em até 1 hora
-    if reclamacao.tempo_desde_pedido < 60:
-        return "APROVADO"
-    
-    return "INCONCLUSIVO"
-```
-
-### Customizar base de conhecimento
-
-Adicione novas políticas ao CSV:
-
-```csv
-categoria,pergunta,resposta,confianca
-Promocao,Posso usar cupom expirado?,Não cupons têm validade,0.99
-Entrega,Entregador não chegou?,Aguarde 15min ou cancele,0.90
-```
-
-### Exportar relatórios em CSV
-
-Modifique `gerenciador_json.py` para exportar:
-
-```python
-import pandas as pd
-
-def exportar_relatorio_csv(reclamacoes: list) -> None:
-    df = pd.DataFrame([r.dict() for r in reclamacoes])
-    df.to_csv('relatorio_reclamacoes.csv', index=False)
-```
-
----
-
-## Troubleshooting
-
-### Erro: "Arquivo CSV não encontrado"
-- **Solução:** Verifique se `base_conhecimento_ifood_genai-exemplo.csv` existe na pasta
-- **Alternativa:** Crie um CSV com a estrutura: `categoria,pergunta,resposta,confianca`
-
-### Baixa confiança em todas as respostas
-- **Causa:** Base de conhecimento pequena ou não relacionada
-- **Solução:** Adicione mais políticas relevantes ao CSV
-
-### Erro: "JSON decode error"
-- **Causa:** Arquivo `resposta_usuario.json` corrompido
-- **Solução:** Delete o arquivo - será recriado automaticamente
-
-### Reclamações não sendo salvas
-- **Causa:** Permissões de escrita no diretório
-- **Solução:** Execute como administrador ou mude permissões da pasta
-
-### IA sempre retorna fallback humano
-- **Causa:** Threshold de confiança muito alto
-- **Solução:** Reduza `CONFIDENCE_THRESHOLD` para 0.70-0.75
-
-### Validação rígida não funciona
-- **Causa:** Regras não implementadas ou dados faltando
-- **Solução:** Verifique se todos os campos da `Reclamacao` estão preenchidos
-
----
-
-## Possíveis Melhorias
-
-### Machine Learning e IA Avançada
-- **Modelo de classificação:** Treinar com histórico de decisões
-- **Análise de sentimento:** Detectar urgência e frustração do cliente
-- **Predição de churn:** Identificar clientes em risco de abandono
-
-### Análise e Relatórios
-- **Analytics avançado:** Métricas de performance e KPIs
-- **Exportação múltipla:** PDF, Excel, Power BI
-- **Auditoria completa:** Logs detalhados de todas as decisões
-- **A/B Testing:** Comparar eficácia de diferentes estratégias
-
-### Segurança e Compliance
-- **Criptografia:** Proteger dados sensíveis (LGPD/GDPR)
-- **Auditoria de compliance:** Rastreabilidade de decisões
-- **Rate limiting:** Prevenir abuso do sistema
----
-
-## Licença
-
-Este projeto é uma POC (Prova de Conceito) para fins educacionais e de demonstração. Use como base para implementações em produção respeitando compliance e regulamentações aplicáveis.
+**Desenvolvido como POC para o desafio iFood GenAI**
